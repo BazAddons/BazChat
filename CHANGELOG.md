@@ -1,5 +1,11 @@
 # BazChat Changelog
 
+## 003 — Re-tag of the v002 taint fix
+
+CurseForge silently dropped the v002 upload despite the CI reporting
+success. Re-tagging the same fix as v003 so the chat-event taint
+patch makes it onto the public release.
+
 ## 002 — Stop the chat-event taint spam
 
 Midnight's Blizzard chat code added a `HistoryKeeper` that holds
