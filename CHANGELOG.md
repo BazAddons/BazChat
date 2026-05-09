@@ -1,5 +1,12 @@
 # BazChat Changelog
 
+## 004 — Release pipeline migration
+
+Switched BazChat over to CurseForge's webhook auto-packager so
+releases publish reliably going forward — the previous v002/v003
+uploads were getting silently dropped server-side. No gameplay or
+interface changes; the addon code is identical to v003.
+
 ## 003 — Re-tag of the v002 taint fix
 
 CurseForge silently dropped the v002 upload despite the CI reporting
