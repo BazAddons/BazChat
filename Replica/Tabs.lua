@@ -21,7 +21,7 @@
 --   .addBtn                             -- the floating "+" button (read-only)
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local Tabs = {}
 addon.Tabs = Tabs
@@ -220,7 +220,7 @@ end
 -- modern retail (Blizzard bug); GetZonePVPInfo == "sanctuary" is the
 -- accurate signal.
 function Tabs:IsTradeUsable()
-    local pvpType = GetZonePVPInfo and GetZonePVPInfo() or nil
+    local pvpType = C_PvP.GetZonePVPInfo()
     return pvpType == "sanctuary"
 end
 
@@ -306,7 +306,7 @@ end
 local function ShouldShowTab(autoShow)
     if not autoShow or autoShow == "always" then return true end
     if autoShow == "city" then
-        return GetZonePVPInfo and GetZonePVPInfo() == "sanctuary" or false
+        return C_PvP.GetZonePVPInfo() == "sanctuary"
     end
     if autoShow == "raid" then
         return IsInRaid and IsInRaid() or false
@@ -740,15 +740,15 @@ function Tabs:AddFor(window, index, label)
             if math.abs(x - self._bcMouseDownX) <= DRAG_THRESHOLD then return end
             -- Movement detected. Try to start a container drag.
             if Wins:IsContainerLocked(dockID) then StopMonitor(self); return end
-            local inst = Wins.docks and Wins.docks[dockID]
-            if not inst or not inst.frame then StopMonitor(self); return end
-            if inst.frame._inEditMode then StopMonitor(self); return end
+            local dock = Wins.docks and Wins.docks[dockID]
+            if not dock or not dock.frame then StopMonitor(self); return end
+            if dock.frame._inEditMode then StopMonitor(self); return end
             -- Cancel TabDrag's pending hold timer (movement preempted).
             if self._bcHoldTimer then
                 self._bcHoldTimer:Cancel()
                 self._bcHoldTimer = nil
             end
-            inst.frame:StartMoving()
+            dock.frame:StartMoving()
             self._bcContainerDragging = true
             StopMonitor(self)
         end
@@ -760,9 +760,9 @@ function Tabs:AddFor(window, index, label)
         tab:HookScript("OnMouseUp", function(self, btn)
             -- Finalize if we started a container drag.
             if self._bcContainerDragging then
-                local inst = Wins.docks and Wins.docks[dockID]
-                if inst and inst.frame then
-                    inst.frame:StopMovingOrSizing()
+                local dock = Wins.docks and Wins.docks[dockID]
+                if dock and dock.frame then
+                    dock.frame:StopMovingOrSizing()
                     if Wins.SaveContainerPos then
                         Wins:SaveContainerPos(dockID)
                     end

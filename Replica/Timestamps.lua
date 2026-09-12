@@ -23,7 +23,7 @@
 --   addon.Timestamps.SENTINEL              -- string used in extras
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local Timestamps = {}
 addon.Timestamps = Timestamps

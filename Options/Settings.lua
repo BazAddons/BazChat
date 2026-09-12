@@ -12,7 +12,7 @@
 -- standalone options window.
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local addonName = ...
 
 local PAGE_KEY = "BazChat-Settings"
 

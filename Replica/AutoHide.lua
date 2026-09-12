@@ -28,7 +28,7 @@
 --   :PingScroll(f)      -- call from the mouse-wheel handler
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local AutoHide = {}
 addon.AutoHide = AutoHide

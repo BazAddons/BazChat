@@ -14,7 +14,7 @@
 -- need to read editBox state - clean and patch-resilient.
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local History = {}
 addon.History = History

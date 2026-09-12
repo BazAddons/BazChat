@@ -21,7 +21,7 @@
 -- frame's top-right so the user can still configure filters.
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local CombatLog = {}
 addon.CombatLog = CombatLog

@@ -23,7 +23,7 @@
 --   :Refresh(chatFrame)           -- recompute all overlays now
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local TimestampOverlay = {}
 addon.TimestampOverlay = TimestampOverlay

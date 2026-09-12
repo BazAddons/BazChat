@@ -8,7 +8,7 @@
 -- bracket the AddMessage hook with a guard goes here.
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 ---------------------------------------------------------------------------
 -- IterateChatFrames(fn)

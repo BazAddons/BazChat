@@ -14,7 +14,7 @@
 -- via TabDrag:LoadOrder.
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local TabDrag = {}
 addon.TabDrag = TabDrag

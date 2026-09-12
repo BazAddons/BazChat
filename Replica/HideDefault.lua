@@ -13,7 +13,7 @@
 -- firing. We just hide and reposition off-screen.
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local HideDefault = {}
 addon.HideDefault = HideDefault

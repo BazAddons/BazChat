@@ -15,7 +15,7 @@
 -- never feels destructive.
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local Replica = {}
 addon.Replica = Replica

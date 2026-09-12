@@ -18,7 +18,7 @@
 --   .CATEGORIES              -- ordered array of category defs (read-only)
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local Channels = {}
 addon.Channels = Channels

@@ -18,7 +18,7 @@
 --   :Replay(f, idx)                -- on Window:Create, populates the SMF
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local Persistence = {}
 addon.Persistence = Persistence

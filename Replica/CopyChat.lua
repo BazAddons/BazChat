@@ -15,7 +15,7 @@
 --   BazChat:OpenCopyForActiveFrame()      -- back-compat for /bc copy slash
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local CopyChat = {}
 addon.CopyChat = CopyChat

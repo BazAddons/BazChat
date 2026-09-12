@@ -16,7 +16,7 @@
 -- module's Refresh) when settings change.
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 function BazChat:RegisterModule(spec)
     if not spec or type(spec.id) ~= "string" then return end

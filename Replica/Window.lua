@@ -18,7 +18,9 @@
 -- exist on ChatFrameMixin).
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+-- BazChat replaces the default chat window, so it owns this Blizzard global.
+-- luacheck: globals DEFAULT_CHAT_FRAME
+local _, addon = ...
 
 local Window = {}
 addon.Window = Window
@@ -42,7 +44,7 @@ Window.tabs = tabs
 -- categories live. Old eventGroup field is migrated to channels{} on
 -- first load post-upgrade and then ignored.
 
--- Is the Trade channel currently usable? Use GetZonePVPInfo() - it
+-- Is the Trade channel currently usable? Use C_PvP.GetZonePVPInfo() - it
 -- returns "sanctuary" for major cities (Stormwind / Orgrimmar /
 -- Valdrakken / Dornogal / etc.), which is precisely where Trade
 -- chat is active. We previously tried C_ChatInfo.IsRegionalService-

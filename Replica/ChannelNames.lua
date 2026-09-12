@@ -20,7 +20,7 @@
 --   :Refresh()                 -- rebuild pattern map from current cfg
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local ChannelNames = {}
 addon.ChannelNames = ChannelNames

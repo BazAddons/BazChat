@@ -17,7 +17,7 @@
 --   :Apply(f)           -- build/refresh the NineSlice wrapper for f
 ---------------------------------------------------------------------------
 
-local addonName, addon = ...
+local _, addon = ...
 
 local Chrome = {}
 addon.Chrome = Chrome
