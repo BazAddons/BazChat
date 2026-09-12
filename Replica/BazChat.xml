@@ -37,13 +37,19 @@
              editBox            - Blizzard's ChatFrameEditBoxTemplate at
                                   the bottom (channel selector + history
                                   + autocomplete all included).
-         The mixin (ChatFrameMixin) is applied in Lua at CreateFrame time
-         in Window.lua so we keep full control over event registration
-         and avoid double-init via ChatFrameTemplate's OnLoad chain.
+         Inherits Blizzard's ChatFrameTemplate so the frame gets the
+         ChatFrameMixin AND a Blizzard-attributed OnEvent script. That
+         attribution is what lets MessageEventHandler run untainted:
+         Midnight's chat code compares secret values and indexes a
+         forbidden HistoryKeeper table, both of which throw when the
+         dispatch is 'tainted by BazChat' (any SetScript from Lua does
+         that, securecallfunction or not). ChatFrameTemplate's OnLoad
+         runs at CreateFrame time; Window.lua overrides its defaults.
          ================================================================= -->
     <ScrollingMessageFrame name="BazChatFrameTemplate"
         movable="true" enableMouse="false" resizable="true"
-        inherits="FloatingBorderedFrame"
+        inherits="ChatFrameTemplate,FloatingBorderedFrame"
+        frameStrata="MEDIUM" toplevel="false"
         parent="UIParent" clampedToScreen="false" frameLevel="5" virtual="true">
 
         <Size x="430" y="120"/>
@@ -57,15 +63,9 @@
         </ResizeBounds>
 
         <Frames>
-            <!-- Scroll bar (right edge). ChatFrameTemplate adds this for
-                 default chat; we add it manually so we don't need to
-                 inherit ChatFrameTemplate's OnLoad chain. -->
-            <EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
-                <Anchors>
-                    <Anchor point="TOPRIGHT"/>
-                    <Anchor point="BOTTOMRIGHT"/>
-                </Anchors>
-            </EventFrame>
+            <!-- Scroll bar (right edge, parentKey="ScrollBar") is inherited
+                 from ChatFrameTemplate with these same anchors; declaring a
+                 second one here would leave an orphan scrollbar behind. -->
 
             <!-- Click-anywhere button: clicking anywhere in the chat
                  frame focuses the edit box. Hidden by default; Lua

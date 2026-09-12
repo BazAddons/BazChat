@@ -8,7 +8,7 @@
 --     selector, language dropdown, autocomplete, history all included)
 --   * MinimalScrollBar on the right edge
 --   * Resize grabber, scroll-to-bottom indicator, click-anywhere focus
---   * Mixin(ChatFrameMixin) for the message formatter
+--   * ChatFrameMixin + secure OnEvent via ChatFrameTemplate inheritance
 --   * A clickable tab anchored above the window
 --
 -- Template definition lives in Replica/BazChat.xml. We CreateFrame
@@ -564,15 +564,15 @@ end
 ---------------------------------------------------------------------------
 
 local function InitMixinFields(f, id, label)
-    f.channelList               = {}
-    f.zoneChannelList           = {}
-    f.messageTypeList           = {}
-    f.privateMessageList        = nil
-    f.excludePrivateMessageList = nil
-    f.defaultLanguage           = GetDefaultLanguage and GetDefaultLanguage() or "Common"
-    f.alternativeDefaultLanguage = GetAlternativeDefaultLanguage and GetAlternativeDefaultLanguage() or nil
-    f.chatType                  = "SAY"
-    f.name                      = label or ("Tab" .. id)  -- used by formatter for tab labels
+    -- Only fields Blizzard never reads before its protected work may be
+    -- written here. A frame field written by addon code is tainted, and
+    -- the template's secure MessageEventHandler reading it re-taints the
+    -- whole dispatch. channelList / zoneChannelList / messageTypeList are
+    -- created by ChatFrameTemplate's OnLoad; defaultLanguage and
+    -- alternativeDefaultLanguage are set by Blizzard's ConfigEventHandler
+    -- on PLAYER_ENTERING_WORLD (Channels.lua keeps that event registered);
+    -- chatType is left nil (the edit box carries its own).
+    f.name = label or ("Tab" .. id)  -- used by formatter for tab labels
     f:SetID(10 + id)
 end
 
@@ -984,13 +984,12 @@ function Window:Create(index, opts)
         end
     end
 
-    -- Layer Blizzard's chat formatter onto the frame. Defensive guard
-    -- in case a future patch ever moves ChatFrameMixin: the frame
-    -- still works, just without formatting.
-    if type(ChatFrameMixin) == "table" and type(ChatFrameMixin.MessageEventHandler) == "function" then
-        Mixin(f, ChatFrameMixin)
-    elseif addon.core then
-        addon.core:Print("|cffff4444ChatFrameMixin missing; chat will not format.|r")
+    -- ChatFrameMixin arrives through the template's mixin attribute (see
+    -- BazChat.xml). Do NOT Mixin() it again from Lua: a method slot
+    -- written by addon code is tainted, and the template's secure OnEvent
+    -- reading it would taint the entire dispatch.
+    if type(f.MessageEventHandler) ~= "function" and addon.core then
+        addon.core:Print("|cffff4444ChatFrameTemplate mixin missing; chat will not format.|r")
     end
     InitMixinFields(f, index, label)
 
@@ -1023,19 +1022,14 @@ function Window:Create(index, opts)
         f.clickAnywhereButton:Show()
     end
 
-    -- Wire mixin methods to actual scripts. SetScript itself attributes
-    -- the script to BazChat - so when WoW dispatches OnEvent the
-    -- execution context is "tainted by BazChat" the moment our handler
-    -- runs, even though our handler is a direct reference to the mixin
-    -- method (no wrapper). Midnight's HistoryKeeper has forbidden
-    -- tables that throw on tainted access, which our taint contaminates.
-    -- securecallfunction wraps the dispatch in an isolated context
-    -- where the prior addon attribution doesn't propagate into the
-    -- mixin's secure work (ChatHistory_GetAccessID, RemoveExtraSpaces,
-    -- etc.) or back out of it.
-    f:SetScript("OnEvent", function(self, event, ...)
-        securecallfunction(self.OnEvent, self, event, ...)
-    end)
+    -- OnEvent is deliberately NOT set here. It is inherited from
+    -- ChatFrameTemplate (<OnEvent method="OnEvent"/>), so WoW attributes
+    -- the dispatch to Blizzard and MessageEventHandler runs untainted.
+    -- Any SetScript from addon code - even wrapped in securecallfunction,
+    -- even pointing straight at the mixin method - marks the execution
+    -- "tainted by BazChat", and Midnight then throws on the secret-value
+    -- compare (discordInfo.userID) and the forbidden HistoryKeeper table
+    -- inside the handler, dropping the message.
     InstallChannelListFilter()
     HookHyperlinks(f)
     HookMouseWheel(f)

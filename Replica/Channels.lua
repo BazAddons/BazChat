@@ -349,6 +349,14 @@ end
 local ALWAYS_ON_EVENTS = {
     "UPDATE_CHAT_COLOR",                -- user changed a channel color
     "UPDATE_CHAT_COLOR_NAME_BY_CLASS",  -- toggled "color names by class"
+    -- Blizzard's ConfigEventHandler sets self.defaultLanguage /
+    -- alternativeDefaultLanguage on these. They must be written by
+    -- Blizzard (secure) rather than by us: the message formatter reads
+    -- them before its protected work, and an addon-written field would
+    -- taint the dispatch. Without them SAY/YELL would show a language tag.
+    "PLAYER_ENTERING_WORLD",
+    "NEUTRAL_FACTION_SELECT_RESULT",
+    "ALTERNATIVE_DEFAULT_LANGUAGE_CHANGED",
 }
 
 function Channels:Subscribe(f, idx)
