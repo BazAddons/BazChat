@@ -218,7 +218,10 @@ function Timestamps:ExtractTimestamp(...)
     local n = select("#", ...)
     -- extras start at position 7: text, r, g, b, messageId, holdTime, ...
     for i = 7, n - 1 do
-        if select(i, ...) == self.SENTINEL then
+        local v = select(i, ...)
+        -- Extras can carry secret values (Midnight); `==` on one throws.
+        if type(v) == "string" and not (issecretvalue and issecretvalue(v))
+            and v == self.SENTINEL then
             return select(i + 1, ...)
         end
     end

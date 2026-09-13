@@ -747,14 +747,20 @@ local function HookAddMessage(f, idx)
     if type(original) ~= "function" then return end
     f._bcOriginalAddMessage = original
     f.AddMessage = function(self, text, r, g, b, messageId, holdTime, ...)
-        -- Secret-string bypass: if the engine has marked this text as
-        -- protected (encounter warnings, restricted whispers, etc.),
-        -- skip ALL of our processing - rewrite, sentinel injection,
-        -- and persistence - and just pass the message straight to the
-        -- SMF's original AddMessage. The user still sees the line; we
-        -- just don't try to mutate or store it.
+        -- Secret-string path: the engine has marked this text as
+        -- protected (NPC say/yell, encounter warnings, restricted
+        -- whispers, ...). Anything that reads the text - the channel-
+        -- prefix rewrite and persistence - is skipped. The timestamp
+        -- still gets attached: it travels as extra AddMessage args
+        -- (sentinel + unix time), never inside the text, so the gutter
+        -- renders for these lines exactly like any other.
         if not IsSafeText(text) then
-            original(self, text, r, g, b, messageId, holdTime, ...)
+            if addon.Timestamps then
+                original(self, text, r, g, b, messageId, holdTime, ...,
+                    addon.Timestamps.SENTINEL, time())
+            else
+                original(self, text, r, g, b, messageId, holdTime, ...)
+            end
             UpdateScrollToBottomButton(self)
             return
         end
@@ -783,7 +789,10 @@ local function HookAddMessage(f, idx)
         if addon.Timestamps and select("#", ...) > 0 then
             local n = select("#", ...)
             for i = 1, n - 1 do
-                if select(i, ...) == addon.Timestamps.SENTINEL then
+                local v = select(i, ...)
+                -- `==` on a secret value throws; only compare plain strings.
+                if type(v) == "string" and not (issecretvalue and issecretvalue(v))
+                    and v == addon.Timestamps.SENTINEL then
                     hasSentinel = true
                     break
                 end

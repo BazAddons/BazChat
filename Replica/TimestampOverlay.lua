@@ -171,7 +171,10 @@ local function ExtractFromEntry(entry)
     local n = ed.n or #ed
     local SENTINEL = addon.Timestamps and addon.Timestamps.SENTINEL or "_bcTS"
     for i = 1, n - 1 do
-        if ed[i] == SENTINEL then
+        local v = ed[i]
+        -- Extras can carry secret values (Midnight); `==` on one throws.
+        if type(v) == "string" and not (issecretvalue and issecretvalue(v))
+            and v == SENTINEL then
             return ed[i + 1]
         end
     end
