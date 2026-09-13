@@ -1,10 +1,13 @@
 # BazChat Changelog
 
-## 005 — Midnight API update
+## 006 — NPC chat works again
 
-The zone check that decides whether the Trade channel is available (and
-which tabs show it) now uses the current Midnight PvP API. No visible
-change today; this keeps it working when Blizzard removes the old
-compatibility function.
+**NPC say and yell lines show up again.** Since patch 12.1 those lines
+were silently dropped and the error log filled with "secret value" and
+"cannot be accessed while tainted" messages. BazChat's windows now hand
+message processing to Blizzard's own chat code, which is allowed to read
+the protected data, so the lines display normally, complete with their
+timestamps and gutter bars.
 
-**Marked compatible with patch 12.1.0.** The addon no longer shows as out of date in the AddOns list.
+One limit remains, set by Blizzard: NPC lines can't be kept in BazChat's
+saved history, so they won't reappear after a reload.
